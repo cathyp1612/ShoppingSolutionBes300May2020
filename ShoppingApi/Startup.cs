@@ -9,6 +9,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using ShoppingApi.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace ShoppingApi
 {
@@ -25,6 +27,12 @@ namespace ShoppingApi
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+            services.AddDbContext<ShoppingDataContext>(options =>
+             {
+                options.UseSqlServer(Configuration.GetConnectionString("shopping"));
+
+             });
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -10,5 +10,6 @@ namespace ShoppingApi.Data
         public int Id { get; set; }
         public string Description { get; set; }
         public bool Purchased { get; set; }
+        public string PurchasedFrom { get; set; }
     }
 }
