@@ -1,23 +1,21 @@
 version: "3.7"
 services:
+    sql:
+        image: shopping-sql:latest
+        # ports:
+            # - 1433:1433
+        networks:
+            - my-network
     api:
         image: shopping:latest
         environment: 
-            - ConnectionStrings__shopping=server=sql;database=shopping;user id=SA;password="Tokyo_Joe_138!!"
+            - ConnectionStrings__shopping=Server=sql;Database=shopping;User Id=SA;Password=Tokyo_Joe
         ports:
             - 8080:80
         networks:
             - my-network
-    sql:
-        image: mcr.microsoft.com/mssql/server:2017-latest
-        environment:
-            - ACCEPT_EULA=Y
-            - SA_PASSWORD=Tokyo_Joe_138!!
-            - MSSQL_PID=developer
-        ports:
-            - 8080:80
-        networks:
-            - my-network
+        depends_on: 
+            - sql
 networks:
     my-network:
         driver: bridge

@@ -7,12 +7,13 @@ namespace ShoppingApi.Models
 {
     public class GetShoppingListResponse
     {
-        public List<ShoppingLIstItemResponse> Data { get; set; }
+        public List<ShoppingListItemResponse> Data { get; set; }
     }
-    public class ShoppingLIstItemResponse
+    public class ShoppingListItemResponse
     {
         public int Id { get; set; }
         public string Description { get; set; }
         public bool Purchased { get; set; }
+        public string PurchasedFrom { get; set; }
     }
 }

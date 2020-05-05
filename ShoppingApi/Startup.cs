@@ -11,6 +11,10 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using ShoppingApi.Data;
 using Microsoft.EntityFrameworkCore;
+using AutoMapper;
+using ShoppingApi.Mappers;
+using System.Text.Json.Serialization;
+using ShoppingApi.Services;
 
 namespace ShoppingApi
 {
@@ -26,12 +30,32 @@ namespace ShoppingApi
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllers();
+            services.AddControllers()
+                .AddJsonOptions(option =>
+                {
+                    option.JsonSerializerOptions.IgnoreNullValues = true;
+                    option.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+                });               
             services.AddDbContext<ShoppingDataContext>(options =>
              {
                 options.UseSqlServer(Configuration.GetConnectionString("shopping"));
 
              });
+
+            //services.AddAutoMapper(typeof(Startup));
+
+            var mappingConfig = new MapperConfiguration(mc =>
+            {
+                mc.AddProfile(new AutomapperProfile());
+            });
+            IMapper mapper = mappingConfig.CreateMapper();
+
+            services.AddSingleton(mapper);
+            services.AddSingleton<MapperConfiguration>(mappingConfig);
+            services.AddTransient<IMapCurbsideOrders, EfCurbsideMapper > ();
+            services.AddSingleton<CurbsideChannel>();  // Defers creation until needed.
+            services.AddHostedService<CurbsideOrderProcessor>();
+
 
         }
 
