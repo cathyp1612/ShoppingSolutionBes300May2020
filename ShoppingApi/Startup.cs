@@ -15,6 +15,7 @@ using AutoMapper;
 using ShoppingApi.Mappers;
 using System.Text.Json.Serialization;
 using ShoppingApi.Services;
+using ShoppingApi.Hubs;
 
 namespace ShoppingApi
 {
@@ -30,6 +31,21 @@ namespace ShoppingApi
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddCors(options =>
+                options.AddPolicy("CorsPolicy", builder =>
+                    builder.WithOrigins("http://localhost:4200")
+                    .AllowAnyMethod()
+                    .AllowAnyHeader()
+                    .AllowCredentials()
+                )
+            );
+            services.AddSignalR().AddJsonProtocol(options =>
+            {
+                options.PayloadSerializerOptions.IgnoreNullValues = true;
+                options.PayloadSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+            }
+            );
+
             services.AddControllers()
                 .AddJsonOptions(option =>
                 {
@@ -67,13 +83,17 @@ namespace ShoppingApi
                 app.UseDeveloperExceptionPage();
             }
 
+            app.UseCors("CorsPolicy");
+
             app.UseRouting();
+
 
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                endpoints.MapHub<CurbsideHub>("curbsidehub");
             });
         }
     }
